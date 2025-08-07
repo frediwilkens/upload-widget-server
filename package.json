@@ -1,24 +1,24 @@
 {
-	"name": "upload-widget-server",
-	"version": "1.0.0",
-	"type": "module",
-	"main": "index.js",
-	"scripts": {
-		"dev": "tsx watch src/infra/http/server.ts"
-	},
-	"author": "",
-	"license": "ISC",
-	"description": "",
-	"devDependencies": {
-		"@biomejs/biome": "^2.1.3",
-		"@types/node": "^24.2.0",
-		"tsx": "^4.20.3",
-		"typescript": "^5.9.2"
-	},
-	"dependencies": {
-		"@fastify/cors": "^11.1.0",
-		"fastify": "^5.4.0",
-		"fastify-type-provider-zod": "^5.0.3",
-		"zod": "^4.0.15"
-	}
+  "name": "upload-widget-server",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch --env-file .env src/infra/http/server.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.3",
+    "@types/node": "^24.2.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.1.0",
+    "fastify": "^5.4.0",
+    "fastify-type-provider-zod": "^5.0.3",
+    "zod": "^4.0.15"
+  }
 }
