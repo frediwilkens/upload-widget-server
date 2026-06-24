@@ -1,0 +1,74 @@
+name: E2E Tests
+
+on: 
+  pull_request:
+    branches:
+      - main
+    types: [opened, reopened, labeled, synchronize]
+
+jobs:
+  run-ci:
+    name: Run E2E Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: docker
+          POSTGRES_PASSWORD: docker
+          POSTGRES_DB: upload_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+  
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        id: setup-docker-buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install NodeJS
+        id: setup-node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22.16.0'
+          cache: 'npm'
+      
+      - name: Install Dependencies
+        id: install-dependencies
+        run: |
+          npm ci
+        
+      - name: Run E2E Test
+        id: run-e2e-tests
+        run: |
+          npm test
+
+      - name: Build image to security scan
+        id: build-image-for-security-scan
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: |
+            widget-server:security-scan
+
+      - name: Run Trivy Scanner
+        id: run-trivy-scanner
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+            image-ref: 'widget-server:security-scan'
+            format: 'table'
+            ignore-unfixed: true
+            vuln-type: 'os,library'
+            severity: 'CRITICAL,HIGH,MEDIUM,LOW'
